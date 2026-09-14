@@ -16,13 +16,16 @@ export const BANDEIRA_LOGOS: Record<string, string> = {
   SP: spLogo,
 };
 
-const BandeiraIcon = ({ bandeira }) => {
-  if (BANDEIRA_LOGOS[bandeira]) {
+const BandeiraIcon = ({ bandeira, distribuidora }) => {
+  const logo = distribuidora.split(" ")[0];
+  const res = bandeira ? bandeira : logo;
+
+  if (BANDEIRA_LOGOS[res]) {
     return (
       <img
-        src={BANDEIRA_LOGOS[bandeira]}
+        src={BANDEIRA_LOGOS[res]}
         alt='Logo da marca'
-        className='size-9 rounded-full object-cover'
+        className='size-4.5 rounded-full object-cover'
       />
     );
   }

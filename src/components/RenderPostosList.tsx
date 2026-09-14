@@ -2,13 +2,9 @@ import React, { useMemo, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { BANDEIRA_LOGOS } from "./BandeiraIcon";
 
-import shellLogo from "../../public/shell.svg";
-import ipirangaLogo from "../../public/ipiranga.png";
-import petrobrasLogo from "../../public/petrobras-8.svg";
-import aleLogo from "../../public/ale.png";
-import spLogo from "../../public/sp-logo-2.png";
-
 const PostoItem = ({ posto, onClick }) => {
+  const temPreco = posto.precos.length > 0;
+
   return (
     <div
       onClick={() => onClick(posto)}
@@ -37,12 +33,12 @@ const PostoItem = ({ posto, onClick }) => {
 
         <div
           className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
-            posto.dataColeta
+            temPreco
               ? "bg-green-100 text-green-700"
               : "bg-muted text-muted-foreground"
           }`}
         >
-          {posto.dataColeta ? "Com preço" : "Sem preço"}
+          {temPreco ? "Com preço" : "Sem preço"}
         </div>
       </div>
 
@@ -106,7 +102,7 @@ const RenderPostosList = ({ postos, moveMap }) => {
         // onClick={handleMove}
       >
         {filteredPostos.map((p) => (
-          <PostoItem key={p.id} posto={p} onClick={handleMove} />
+          <PostoItem key={p.codigoSimp} posto={p} onClick={handleMove} />
         ))}
       </div>
     </div>

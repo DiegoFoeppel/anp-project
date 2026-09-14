@@ -24,6 +24,7 @@ export function SearchInput({
   query,
   setQuery,
   setCidade,
+  setLoadMode,
 }) {
   const [type, setType] = useState<QueryType>("municipio");
 
@@ -31,7 +32,6 @@ export function SearchInput({
     let queryStr = "";
 
     const cnpjLimpo = query.replace(/\D/g, "");
-
     if (cnpjLimpo.length === 14) {
       queryStr += `?cnpj=${cnpjLimpo}`;
     } else {
@@ -46,21 +46,18 @@ export function SearchInput({
       setPostos(response.data.postos);
       setFiltros(response.data.filtros);
       setCidade(response.data.cidade);
+      // setLoadMode("posto-cidade");
 
-      //   onOpenChange(false);
+      const lat = response.data.postos[0].lat;
+      const lng = response.data.postos[0].lng;
+      console.log("teste aaa", lat, lng);
 
-      if (response.data.postos) {
-        const lat = response.data.postos[0].lat;
-        const lng = response.data.postos[0].lng;
-        console.log("teste", lat, lng);
-
-        moveMap(lng, lat);
-      }
+      moveMap(lng, lat);
 
       setQuery("");
       console.log("response", response);
     } catch (err) {
-      console.log("err", err);
+      console.log("err 2", err);
     }
   };
 

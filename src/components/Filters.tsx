@@ -47,9 +47,9 @@ export function Filters({
       />
 
       <Select
-        data={filtros.distribuidoras}
+        data={filtros.bandeiras}
         nome='Distribuidora'
-        value={multipleFilters.distribuidora}
+        value={multipleFilters.bandeira}
         onSelect={(valor) =>
           setMultipleFilters((prev) => ({
             ...prev,
