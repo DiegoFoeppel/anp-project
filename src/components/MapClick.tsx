@@ -19,7 +19,6 @@ function MapClick({ setPostos, setLoadMode }) {
     if (!map || !isLoaded) return;
 
     const handleClick = (e) => {
-      console.log("Clicked at:", e.lngLat);
       const { lat, lng } = e.lngLat;
 
       setCoordinates({ lat: lat, lng: lng });
@@ -45,7 +44,6 @@ function MapClick({ setPostos, setLoadMode }) {
       );
 
       setPostos(response.data.postos);
-      console.log("response", response.data);
     } catch (err) {
       console.log("err", err);
     }

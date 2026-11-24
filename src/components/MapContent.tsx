@@ -39,8 +39,6 @@ const MapContent = ({ postos, filteredPostos, postosGeojson, combustivel }) => {
     };
   }, [map, isLoaded]);
 
-  console.log("zoom", zoom);
-
   if (zoom === null || bounds === null) return null;
 
   const postosVisiveis = filteredPostos.filter((p) =>
@@ -50,8 +48,6 @@ const MapContent = ({ postos, filteredPostos, postosGeojson, combustivel }) => {
     setSelectedPosto(posto);
     setOpen(true);
   };
-
-  console.log("teste", open);
 
   return (
     <>
@@ -71,40 +67,30 @@ const MapContent = ({ postos, filteredPostos, postosGeojson, combustivel }) => {
         onOpenChange={() => setOpen((prev) => !prev)}
         posto={selectedPosto}
       />
-
       {postos.length > 0 &&
-        filteredPostos.map((posto) => {
-          const produto = posto.precos.find((p) => p.produto === combustivel);
+        filteredPostos.map((posto) => (
+          <MapMarker
+            key={posto.codigoSimp}
+            longitude={posto.lng}
+            latitude={posto.lat}
+            onClick={() => handleClick(posto)}
+          >
+            <MarkerContent className=''>
+              <div className='flex flex-row items-center gap-1 rounded-full bg-white p-1 text-[11px] font-semibold text-black shadow-md dark:bg-black dark:text-white border'>
+                {/* <div className='bg-primary flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-white shadow-lg dark:bg-black'> */}
+                <BandeiraIcon
+                  bandeira={posto.bandeira}
+                  distribuidora={posto.distribuidora}
+                />
+                {posto.precoExibicao && (
+                  <span className=''>{posto.precoExibicao}</span>
+                )}
+              </div>
+            </MarkerContent>
 
-          const preco = produto
-            ? produto.preco.toFixed(2).replace(".", ",")
-            : null;
-
-          return (
-            <MapMarker
-              key={posto.codigoSimp}
-              longitude={posto.lng}
-              latitude={posto.lat}
-              onClick={() => handleClick(posto)}
-            >
-              <MarkerContent className=''>
-                <div className='flex flex-row items-center gap-1 rounded-full bg-white p-1 text-[11px] font-semibold text-black shadow-md dark:bg-black dark:text-white border'>
-                  {/* <div className='bg-primary flex h-9 w-9 items-center justify-center rounded-full border-2 border-white text-white shadow-lg dark:bg-black'> */}
-                  <BandeiraIcon
-                    bandeira={posto.bandeira}
-                    distribuidora={posto.distribuidora}
-                  />
-                  {/* </div> */}
-                  {preco && <span className=''>{preco ? preco : "--"}</span>}
-                </div>
-              </MarkerContent>
-
-              <MarkerTooltip>{posto.razaoSocial}</MarkerTooltip>
-
-              {/* <PostoMarker posto={posto} /> */}
-            </MapMarker>
-          );
-        })}
+            <MarkerTooltip>{posto.razaoSocial}</MarkerTooltip>
+          </MapMarker>
+        ))}
     </>
   );
 };

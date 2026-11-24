@@ -1,24 +1,27 @@
 import { Map, MapControls, type MapRef } from "@/components/ui/map";
-import { tiposCombustiveis, type Filtros, type Info } from "../helpers/types";
+import { type Filtros, type Info } from "../helpers/types";
 import { SearchInput } from "./SearchInput";
 import { Filters } from "./Filters";
 import RenderPostosList from "./RenderPostosList";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "./ui/button";
+import { useEffect, useMemo, useRef, useState } from "react";
 import axios from "axios";
 import MapContent from "./MapContent";
-import { Select } from "./Select";
-import Number from "./number";
+import { SelectCombo, SelectInvalid } from "./Select";
 import MapClick from "./MapClick";
+import { tiposCombustiveis } from "@/helpers/functions";
+import { type Cidade } from "../helpers/types";
+import { getPostosParaLista, getPostosParaMapa } from "@/helpers/postos";
+import { MapPin } from "lucide-react";
 
 export function MyMap() {
   const [mode, setMode] = useState(false);
   const [postos, setPostos] = useState<Info[]>([]);
   const [filtros, setFiltros] = useState<Filtros[]>([]);
-  const [query, setQuery] = useState("");
-  const [cidade, setCidade] = useState("");
+  const [query, setQuery] = useState("Fortal");
+  const [cidade, setCidade] = useState<Cidade | null>(null);
   const [geojson, setGeojson] = useState(null);
   const [loadMode, setLoadMode] = useState(null);
+  const [ordem, setOrdem] = useState("");
 
   const [combustivel, setCombustivel] = useState(() => {
     return localStorage.getItem("combustivel") ?? "";
@@ -29,22 +32,21 @@ export function MyMap() {
     bandeira: "",
   });
 
-  const filteredPostos = postos.filter((posto) => {
-    if (mode && !(posto.precos.length > 0)) {
-      return false;
-    }
+  console.log(multipleFilters);
 
-    return Object.entries(multipleFilters).every(([chave, valorFiltro]) => {
-      if (!valorFiltro) return true;
+  const postosParaMapa = useMemo(
+    () => getPostosParaMapa(postos, multipleFilters, combustivel, mode),
+    [postos, multipleFilters, combustivel, mode],
+  );
 
-      return posto[chave as keyof typeof posto] === valorFiltro;
-    });
-  });
+  const postosParaLista = useMemo(
+    () => getPostosParaLista(postos, combustivel, multipleFilters, ordem, mode),
+    [postos, combustivel, multipleFilters, ordem, mode],
+  );
 
   const mapRef = useRef<MapRef>(null);
 
   const moveMap = (lng: number, lat: number, zoom = 12) => {
-    console.log("data2", lng, lat, zoom);
     mapRef.current?.flyTo({
       center: [lng, lat],
       zoom: zoom,
@@ -55,24 +57,7 @@ export function MyMap() {
     });
   };
 
-  const loadGeojson = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8001/api/postos/geojson",
-      );
-
-      setGeojson(response.data);
-    } catch (err) {
-      console.log("err", err);
-    }
-  };
-
-  useEffect(() => {
-    loadGeojson();
-  }, []);
-
   const handleCombustivelChange = (combustivel: string) => {
-    console.log("valor", combustivel);
     if (!combustivel) return;
 
     setCombustivel(combustivel);
@@ -80,22 +65,27 @@ export function MyMap() {
     localStorage.setItem("combustivel", combustivel);
   };
 
+  console.log("selected cit");
+
+  console.log("filtros", filtros);
   return (
     <div className='flex h-screen w-screen'>
-      <aside className='w-[380px] flex-shrink-0 h-full overflow-y-auto border-r bg-background flex flex-col'>
-        <div className='p-4 border-b'>
-          <h2>MapANP</h2>
-
-          <Number />
-
-          <p>Preferência de Combustível</p>
-          <Select
-            data={tiposCombustiveis}
-            nome='Combustível'
-            value={combustivel}
-            onSelect={handleCombustivelChange}
-          />
+      <aside className='w-[380px] flex-shrink-0 h-full overflow-y-auto border-r bg-background flex flex-col p-4'>
+        {/* <div className='p-4 border-b'> */}
+        <div className='border-b mb-2'>
+          <h2 className='my-1'>MapANP</h2>
         </div>
+
+        {/* <div className='border-b mb-2'> */}
+        {/* <p className=''>Preferência de Combustível</p> */}
+        <SelectInvalid
+          data={tiposCombustiveis}
+          nome='Combustível'
+          value={combustivel}
+          onSelect={handleCombustivelChange}
+        />
+
+        {/* </div> */}
 
         <SearchInput
           query={query}
@@ -106,9 +96,14 @@ export function MyMap() {
           setCidade={setCidade}
         />
 
+        <div className='border-b'></div>
+
         {postos.length > 0 && (
           <>
-            <p className='mx-4 mb-2'>Cidade selecionada: {cidade}</p>
+            <p className='my-2 flex flex-row items-center gap-2'>
+              <MapPin size={16} />
+              {cidade?.nome}, {cidade?.uf}
+            </p>
             <Filters
               filtros={filtros}
               setMultipleFilters={setMultipleFilters}
@@ -117,9 +112,9 @@ export function MyMap() {
               setMode={setMode}
             />
 
-            <div className='border-b'></div>
+            <div className='border-b mb-4'></div>
 
-            <RenderPostosList postos={filteredPostos} moveMap={moveMap} />
+            <RenderPostosList postos={postosParaLista} moveMap={moveMap} />
           </>
         )}
       </aside>
@@ -136,7 +131,7 @@ export function MyMap() {
 
           <MapContent
             postos={postos}
-            filteredPostos={filteredPostos}
+            filteredPostos={postosParaMapa}
             postosGeojson={geojson}
             combustivel={combustivel}
           />
@@ -148,6 +143,21 @@ export function MyMap() {
   );
 }
 
+// const loadGeojson = async () => {
+//   try {
+//     const response = await axios.get(
+//       "http://localhost:8001/api/postos/geojson",
+//     );
+
+//     setGeojson(response.data);
+//   } catch (err) {
+//     console.log("err", err);
+//   }
+// };
+
+// useEffect(() => {
+//   loadGeojson();
+// }, []);
 {
   /* /* <SheetDemo
   open={open}

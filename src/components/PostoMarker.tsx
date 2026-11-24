@@ -1,7 +1,4 @@
-import React from "react";
 import { MarkerPopup } from "./ui/map";
-import { cn } from "@/lib/utils";
-import { colors } from "@/helpers/types";
 import PostoItem from "./PostoItem";
 
 const PostoMarker = ({ posto }) => {

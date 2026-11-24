@@ -1,23 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import axios from "axios";
-import { useState } from "react";
-import { SearchTabs } from "./SearchTabs";
-import { Select } from "./Select";
+import { SelectCombo } from "./Select";
 import { TogglePostos } from "./TogglePostos";
-
-type QueryType = "cnpj" | "municipio";
 
 export function Filters({
   filtros,
@@ -26,19 +8,16 @@ export function Filters({
   mode,
   setMode,
 }) {
-  console.log("teste", multipleFilters);
-
   return (
-    <div className='p-4 space-y-4'>
+    <div className='space-y-4'>
       {/* <Label htmlFor='sheet-demo-name'>Municipio</Label> */}
       <TogglePostos mode={mode} setMode={() => setMode((prev) => !prev)} />
 
-      <Select
+      <SelectCombo
         data={filtros.bairros}
         nome='Bairro'
         value={multipleFilters.bairro}
         onSelect={(valor) => {
-          console.log("valor", valor);
           setMultipleFilters((prev) => ({
             ...prev,
             bairro: valor,
@@ -46,7 +25,7 @@ export function Filters({
         }}
       />
 
-      <Select
+      <SelectCombo
         data={filtros.bandeiras}
         nome='Distribuidora'
         value={multipleFilters.bandeira}

@@ -15,8 +15,6 @@ export function SearchTabs({}) {
     setQuery(cnpjLimpo);
   };
 
-  console.log("uqr", query);
-
   return (
     <Tabs
       defaultValue='cidade'

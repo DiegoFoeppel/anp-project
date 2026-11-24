@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Sheet,
   SheetClose,
@@ -13,7 +12,6 @@ import {
 } from "@/components/ui/sheet";
 import axios from "axios";
 import { useState } from "react";
-import { SearchTabs } from "./SearchTabs";
 
 type QueryType = "cnpj" | "municipio";
 
@@ -43,29 +41,13 @@ export function SheetDemo({ open, onOpenChange, setPostos, moveMap }) {
       if (response.data.postos) {
         const lat = response.data.postos[0].lat;
         const lng = response.data.postos[0].lng;
-        console.log("teste", lat, lng);
 
         moveMap(lng, lat);
       }
-      console.log("response", response);
     } catch (err) {
       console.log("err", err);
     }
   };
-
-  // const handleQuery = (value: string) => {
-  //   const cnpjLimpo = value.replace(/\D/g, "");
-
-  //   if (cnpjLimpo.length === 14) {
-  //     setType("cnpj");
-  //     setQuery(cnpjLimpo);
-  //   }
-
-  //   setType("municipio");
-  //   setQuery(value.trim());
-  // };
-
-  console.log("type", type, query);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -104,3 +86,15 @@ export function SheetDemo({ open, onOpenChange, setPostos, moveMap }) {
     </Sheet>
   );
 }
+
+// const handleQuery = (value: string) => {
+//   const cnpjLimpo = value.replace(/\D/g, "");
+
+//   if (cnpjLimpo.length === 14) {
+//     setType("cnpj");
+//     setQuery(cnpjLimpo);
+//   }
+
+//   setType("municipio");
+//   setQuery(value.trim());
+// };
